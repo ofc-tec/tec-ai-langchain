@@ -17,10 +17,11 @@ from schemas import AgentResponse
 load_dotenv()
 
 tools = [TavilySearch()]
-llm= ChatOpenAI(model="gpt-4")
-#llm = ChatOllama(temperature=0, model="llama3.1:latest")
+#llm= ChatOpenAI(model="gpt-4")
+#llm = ChatOllama(temperature=0, model="gemma3:270m")
+llm = ChatOllama(temperature=0, model="llama3.1:latest")
 structured_llm = llm.with_structured_output(AgentResponse)
-
+#############################################################
 output_parser= PydanticOutputParser(pydantic_object=AgentResponse)
 react_prompt = hub.pull("hwchase17/react")
 
@@ -30,7 +31,7 @@ react_prompt_with_format_instructions = PromptTemplate(
 ).partial(format_instructions="")
 
 #react_prompt_with_format_instructions = PromptTemplate(
-#    template=REACT_PROMPT_WITH_FORMAT_INSTRUCTIONS,
+#    template=REACT_PROMPT_WITH_FORMAT_INSTRUCTIONS, 
 #    input_variables=["input", "agent_scratchpad", "tool_names"],
 #).partial(format_instructions=output_parser.get_format_instructions())
 
