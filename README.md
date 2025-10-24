@@ -1,111 +1,76 @@
-# 🧠 ReAct Agent with Callbacks (LangChain + Ollama)
+# 🧠 TEC AI LangChain — ReAct Agent with Callbacks (Ollama + uv)
 
-This repository contains a minimal, **educational ReAct agent** implemented in LangChain.  
-It demonstrates:
-- **Manual ReAct execution loop** (no `AgentExecutor` required)
-- **Callbacks** for detailed trace and debugging
-- **Local inference** with **LLaMA Instruct** (via Ollama)
-- Optional swap for **OpenAI GPT**
-- Dependency and environment management via **uv** (for reproducibility)
+This repo contains a minimal **ReAct-style agent** in LangChain, designed for your Agentic AI workshops. It shows:
+- A **manual ReAct loop** (no `AgentExecutor`) so students see the mechanics
+- **Callbacks** for detailed tracing
+- **Local LLaMA Instruct** via **Ollama** (default), with optional GPT swap
+- **Reproducible installs** using **uv** with `pyproject.toml` + `uv.lock`
+
+Repo: https://github.com/ofc-tec/tec-ai-langchain
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick Start (clone → sync → run)
 
-### 1. Install Requirements
+> This repository includes `pyproject.toml` and `uv.lock`, so no manual venv steps are required.
 
-#### Install uv
+1) **Install uv**
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
-# or PowerShell
+# Windows (PowerShell):
 # irm https://astral.sh/uv/install.ps1 | iex
 ```
 
-Check:
+2) **Clone and install**
 ```bash
-uv --version
+git clone https://github.com/ofc-tec/tec-ai-langchain.git
+cd tec-ai-langchain
+uv sync   # creates/manages .venv and installs exact locked versions
 ```
 
-#### Create virtual environment
-```bash
-uv venv .venv
-source .venv/bin/activate    # Linux/macOS
-# or
-.venv\Scripts\activate       # Windows
-```
-
-#### Install all dependencies
-```bash
-uv add   "langchain>=0.3.20"   "langchain-core>=0.3.20"   "langchain-community>=0.3.20"   langchain-openai   langchain-ollama   langchain-tavily==0.2.12   tavily-python   python-dotenv   pydantic>=2
-```
-
-This will create a lockfile, ensuring your students or collaborators reproduce the **exact same environment**.
-
----
-
-### 2. Ollama Setup
-
-Install Ollama: <https://ollama.com/download>
-
-Pull an Instruct model (these follow the ReAct template better):
+3) **Ollama (for LLaMA Instruct models)**
 ```bash
 ollama pull llama3:instruct
-# or (if you have GPU headroom)
+# or (if you have GPU headroom):
 # ollama pull llama3.1:8b-instruct
 ```
+> Make sure the Ollama server is running (`ollama serve`) or the background service is active.
 
-Ensure the server is running:
-```bash
-ollama serve
-```
-
----
-
-### 3. Environment Variables
-
-Create a `.env` file:
+4) **Environment variables**
+- Copy `.env.example` → `.env` and fill only what you use:
 ```dotenv
-# Only needed for OpenAI
+# Only for OpenAI (optional)
 OPENAI_API_KEY=sk-...
 
-# Optional for Tavily
+# Optional for Tavily-based examples
 TAVILY_API_KEY=tvly-...
 
-# Optional if Ollama isn't local
+# Optional if Ollama host differs
 # OLLAMA_HOST=http://localhost:11434
 ```
 
----
-
-### 4. Run
-
-Example ReAct agent with callback tracing:
+5) **Run a demo**
 ```bash
 uv run python 6_ReAct_agent_with_callbacks.py
+# or another script, e.g.:
+# uv run python main.py
 ```
 
-It will print step-by-step reasoning:
-```
-Hello ReAct LangChain!
-AgentAction(tool='get_text_length', tool_input='"DOG"', log='...')
-get_text_length enter with text='DOG'
-observation=3
-AgentFinish(return_values={'output': '3'}, log='Final Answer: 3')
-```
+You should see step-by-step ReAct traces, tool calls, and the final answer.
 
 ---
 
-## 🧩 Project Layout
+## 🧩 What’s inside (typical layout)
 
 ```
 .
-├── 6_ReAct_agent_with_callbacks.py   # Manual ReAct loop
-├── callbacks.py                      # Custom AgentCallbackHandler
-├── prompt.py                         # Optional shared ReAct templates
-├── schemas.py                        # Optional Pydantic response models
-├── main.py                           # Example structured-agent script
-├── .env.example                      # Example environment
+├── 6_ReAct_agent_with_callbacks.py   # Manual ReAct loop demo
+├── callbacks.py                      # AgentCallbackHandler for tracing
+├── prompt.py                         # (optional) shared ReAct templates
+├── schemas.py                        # (optional) Pydantic models
+├── .env.example                      # sample environment vars
 ├── pyproject.toml                    # uv project file
+├── uv.lock                           # pinned deps for reproducibility
 └── README.md
 ```
 
@@ -113,8 +78,11 @@ AgentFinish(return_values={'output': '3'}, log='Final Answer: 3')
 
 ## ⚙️ Switching Models
 
-### Use LLaMA Instruct (default)
+**Default: LLaMA Instruct (Ollama)**  
 ```python
+from langchain_ollama import ChatOllama
+from callbacks import AgentCallbackHandler
+
 llm = ChatOllama(
     model="llama3:instruct",
     temperature=0,
@@ -122,9 +90,10 @@ llm = ChatOllama(
 ).bind(stop=["\nObservation:"])
 ```
 
-### Try GPT
+**OpenAI (optional)**  
 ```python
 from langchain_openai import ChatOpenAI
+from callbacks import AgentCallbackHandler
 
 llm = ChatOpenAI(
     model="gpt-4o-mini",
@@ -135,10 +104,9 @@ llm = ChatOpenAI(
 
 ---
 
-## 🧠 ReAct Loop Explained
+## 🧠 ReAct Loop Notes
 
-This example doesn’t use `AgentExecutor`.  
-Instead, we build the loop manually:
+This example skips `AgentExecutor` so you can see the plan/act loop:
 
 ```python
 agent = (
@@ -150,59 +118,26 @@ agent = (
 )
 ```
 
-Each call to `agent.invoke()` returns:
-- `AgentAction` → run the specified tool, append the `(action, observation)` to the scratchpad
-- `AgentFinish` → final answer
+At each step:
+- `AgentAction` → call the tool and append `(action, observation)` to the scratchpad
+- `AgentFinish` → done (final answer)
 
-### Loop (simplified)
-```python
-while not isinstance(step, AgentFinish):
-    step = agent.invoke({"input": question, "agent_scratchpad": steps})
-    if isinstance(step, AgentAction):
-        obs = tool_map[step.tool](step.tool_input)
-        steps.append((step, str(obs)))
-```
+**Prompt tail tip:** end with  
+`{agent_scratchpad}Thought:`  
+to prevent infinite loops.
 
 ---
 
 ## 🩵 Troubleshooting
 
-| Issue | Fix |
-|-------|-----|
-| **Infinite loop** | Ensure prompt ends with `{agent_scratchpad}Thought:` (not `Thought: {agent_scratchpad}`). Add a `MAX_ITERS` guard. |
-| **Tool not found** | LLaMA sometimes writes `Action: Use the get_text_length function ...`. Add substring/fuzzy matching in `find_tool_by_name()`. |
-| **Parser errors** | Use `llama3:instruct` or handle exceptions around `agent.invoke()`. |
-| **Callbacks not showing tool events** | Add `callbacks=[AgentCallbackHandler()]` inside each `Tool(...)`. |
-| **Version mismatch** | Always install via `uv sync` to honor the lockfile. |
-
----
-
-## 🧩 uv Workflow Cheatsheet
-
-First-time setup:
-```bash
-uv venv .venv && source .venv/bin/activate
-uv sync
-```
-
-Add new dependency:
-```bash
-uv add <package>
-```
-
-Freeze versions for students:
-```bash
-uv lock
-```
-
-Run reproducibly:
-```bash
-uv run python 6_ReAct_agent_with_callbacks.py
-```
+- **Infinite loop** → Ensure the prompt ends with `{agent_scratchpad}Thought:` (not `Thought: {agent_scratchpad}`) and add a `MAX_ITERS` guard.
+- **Tool name mismatch (LLaMA)** → If the model writes `Action: Use the get_text_length ...`, substring/fuzzy-match the tool name before lookup.
+- **Parser hiccups** → Prefer `llama3:instruct`; wrap `agent.invoke(...)` in try/except to retry with a short format hint.
+- **Callbacks not showing tool events** → Add `callbacks=[AgentCallbackHandler()]` when constructing each `Tool(...)` or pass via `config` at invoke time.
+- **Version conflicts** → Always run `uv sync` to honor `uv.lock`.
 
 ---
 
 ## 🪪 License / Credits
 
-Built with LangChain, Ollama, and uv.  
-Created for educational use in Applied Agentic AI and ReAct agent demonstrations.
+Educational scaffolding for Agentic AI (Tec). Built with **LangChain**, **Ollama**, and **uv**.
