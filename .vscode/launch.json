@@ -1,0 +1,16 @@
+  
+{ "version": "0.2.0", 
+"configurations": [ 
+  { "name": "Python: Current File (Debug)", 
+  "type": "debugpy",
+  "request": "launch", 
+  "program": "${file}",
+   "console": "integratedTerminal", // Ensures relative imports and dotenv path resolve from your repo root 
+   "cwd": "${workspaceFolder}", // Loads variables from this .env (must exist at workspace root) 
+   "envFile": "${workspaceFolder}/.env", // Helpful quality-of-life flags "justMyCode": true, "showReturnValue": true, // If your code starts child processes (uvicorn, multiprocessing, etc.) "subProcess": true } ] }
+   "justMyCode": true,
+      "showReturnValue": true,
+      "subProcess": true
+    }
+  ]
+}
