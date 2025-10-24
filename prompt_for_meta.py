@@ -14,15 +14,11 @@ Observation: the result of the action
 Thought: I now know the final answer
 When you are ready to give the final answer:
 
+When you are ready to give the final answer:
 1) Read and follow these format instructions exactly:
 {format_instructions}
-2) Output ONLY the final answer, with no prose, no explanation, no markdown, and no surrounding text.
-3) Wrap the final answer in the following tags and do not add anything outside them:
-
-<final_json>
-[PLACE THE FINAL ANSWER HERE — MUST MATCH THE FORMAT INSTRUCTIONS EXACTLY]
-</final_json>
-
+2) Output ONLY the final answer, no prose.
+3) Wrap it between <final_json> and </final_json>.
 
 
 Begin!

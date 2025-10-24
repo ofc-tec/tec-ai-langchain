@@ -18,10 +18,9 @@ load_dotenv()
 
 tools = [TavilySearch()]
 #llm= ChatOpenAI(model="gpt-4")
-#llm = ChatOllama(temperature=0, model="gemma3:270m")
 llm = ChatOllama(temperature=0, model="llama3.1:latest")
 structured_llm = llm.with_structured_output(AgentResponse)
-#############################################################
+
 output_parser= PydanticOutputParser(pydantic_object=AgentResponse)
 react_prompt = hub.pull("hwchase17/react")
 
