@@ -71,7 +71,7 @@ if __name__ == "__main__":
     #)
 
     #llm = ChatOllama(temperature=0, model="llama3.1:latest").bind(stop=['\nObservation','Observation'])
-    llm = ChatOllama(temperature=0, model="llama3:instruct", callbacks=[AgentCallbackHandler()]).bind(stop=['\nObservation','Observation'])
+    llm = ChatOllama(temperature=0, model="llama3:instruct", callbacks=[AgentCallbackHandler()]).bind(stop=['\nObservation:'])
     intermediate_steps = []
     agent = (
         { "input": lambda x: x["input"],"agent_scratchpad": lambda x: format_log_to_str(x["agent_scratchpad"])}| prompt| llm| ReActSingleInputOutputParser()
