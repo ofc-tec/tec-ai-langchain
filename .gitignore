@@ -10,3 +10,6 @@ wheels/
 .venv
 .env
 .python-version
+
+# cache Folder
+faiss_index_react/
