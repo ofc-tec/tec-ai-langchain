@@ -5,6 +5,9 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_ollama import ChatOllama 
 from langchain_community.vectorstores import FAISS  # only if you're actually using FAISS
 from langchain_core.documents import Document
+from dotenv import load_dotenv
+
+load_dotenv()
 
 @tool
 def get_text_length(text: str) -> int:
