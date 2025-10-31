@@ -42,6 +42,6 @@ vs = FAISS.from_documents(docs, emb)
 
 if __name__ == "__main__":
     # Try a web search call
-    q = "Latest research on visual SLAM using HMMs, two key papers and venues."
+    q = "How did the last weekend's UFC heavyweight bout go?"
     res = agent_executor.invoke({"input": q})
     print(res)

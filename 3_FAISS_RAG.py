@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# filename: agent_rag_ollama.py
+# filename: 3_FAISS_RAG.py
 
 from __future__ import annotations
 
@@ -21,7 +21,7 @@ load_dotenv()
 # LLM + Embeddings (Ollama-only)
 # -----------------------------
 LLM_MODEL = os.getenv("OLLAMA_LLM_MODEL", "llama3.1:latest")
-EMB_MODEL = os.getenv("OLLAMA_EMB_MODEL", "nomic-embed-text")  # or "mxbai-embed-large"
+EMB_MODEL = os.getenv("OLLAMA_EMB_MODEL", "nomic-embed-text")  ## OLLAMA PULL to get it-
 
 llm = ChatOllama(model=LLM_MODEL, temperature=0)
 emb = OllamaEmbeddings(model=EMB_MODEL)
@@ -43,7 +43,7 @@ def ensure_vectorstore() -> FAISS:
     splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=30, separator="\n")
     chunks = splitter.split_documents(docs)
 
-    print(f"[ingest] {len(chunks)} chunks → FAISS")
+    print(f"[ingest] {len(chunks)} chunks  FAISS")
     vs = FAISS.from_documents(chunks, emb)
     vs.save_local(INDEX_DIR)
     return vs
@@ -65,7 +65,7 @@ def retrieve(text: str) -> str:
     Retrieve the most relevant passages from the indexed PDF.
     Return a compact text block with brief citations.
     """
-    docs = retriever.invoke(text)
+    docs = retriever.invoke(text)### ALL THE VECTORDB MAGIC HAPPENS HERE
     out_lines = []
     for i, d in enumerate(docs, 1):
         meta = d.metadata or {}
@@ -100,7 +100,6 @@ if __name__ == "__main__":
     res1 = agent_executor.invoke({"input": "Call get_text_length on 'hola'."})
     print("\n[get_text_length demo]\n", res1)
 
-    # RAG demo (mirrors your first script’s question)
     q = "Give me the gist of ReAct in 3 sentences"
     res2 = agent_executor.invoke({"input": q})
     print("\n[RAG answer]\n", res2["output"])
