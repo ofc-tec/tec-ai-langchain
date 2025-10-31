@@ -1,42 +1,75 @@
+from typing import List
+
 from dotenv import load_dotenv
-from langchain_anthropic import ChatAnthropic
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.tools import tool
-from langchain.agents import create_tool_calling_agent, AgentExecutor
+from langchain_core.messages import HumanMessage, ToolMessage
+from langchain.tools import tool, BaseTool
 from langchain_openai import ChatOpenAI
-from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain_ollama import ChatOllama
+from callbacks import AgentCallbackHandler
 
 load_dotenv()
 
 
 @tool
-def multiply(x: float, y: float) -> float:
-    """Multiply 'x' times 'y'."""
-    return x * y
+def get_text_length(text: str) -> int:
+    """Returns the length of a text by characters"""
+    print(f"get_text_length enter with {text=}")
+    text = text.strip("'\n").strip(
+        '"'
+    )  # stripping away non alphabetic characters just in case
+
+    return len(text)
+
+
+def find_tool_by_name(tools: List[BaseTool], tool_name: str) -> BaseTool:
+    for tool in tools:
+        if tool.name == tool_name:
+            return tool
+    raise ValueError(f"Tool wtih name {tool_name} not found")
 
 
 if __name__ == "__main__":
-    print("Hello Tool Calling")
+    print("Hello LangChain Tools (.bind_tools)!")
+    tools = [get_text_length]
 
-    prompt = ChatPromptTemplate.from_messages(
-        [
-            ("system", "you're a helpful assistant"),
-            ("human", "{input}"),
-            ("placeholder", "{agent_scratchpad}"),
-        ]
+    #llm = ChatOpenAI(
+    #    temperature=0,
+    #    callbacks=[AgentCallbackHandler()],
+    #)
+    llm = ChatOllama(
+        model="llama3.1:latest",
+        temperature=0,
+        callbacks=[AgentCallbackHandler()],
     )
 
-    tools = [TavilySearchResults(), multiply]
-    # llm = ChatOpenAI(model="gpt-4-turbo")
-    llm = ChatAnthropic(model="claude-3-sonnet-20240229", temperature=0)
 
-    agent = create_tool_calling_agent(llm, tools, prompt)
-    agent_executor = AgentExecutor(agent=agent, tools=tools)
+    llm_with_tools = llm.bind_tools(tools)
 
-    res = agent_executor.invoke(
-        {
-            "input": "what is the weather in dubai right now? compare it with San Fransisco, output should in in celsious",
-        }
-    )
+    # Start conversation
+    messages = [HumanMessage(content="What is the length of the word: DOG")]
 
-    print(res)
+    while True:
+        ai_message = llm_with_tools.invoke(messages)
+        # If the model decides to call tools, execute them and return results
+        tool_calls = getattr(ai_message, "tool_calls", None) or []
+        if len(tool_calls) > 0:
+            messages.append(ai_message)
+            for tool_call in tool_calls:
+                # tool_call is typically a dict with keys: id, type, name, args
+                tool_name = tool_call.get("name")
+                tool_args = tool_call.get("args", {})
+                tool_call_id = tool_call.get("id")
+
+                tool_to_use = find_tool_by_name(tools, tool_name)
+                observation = tool_to_use.invoke(tool_args)
+                print(f"observation={observation}")
+
+                messages.append(
+                    ToolMessage(content=str(observation), tool_call_id=tool_call_id)
+                )
+            # Continue loop to allow the model to use the observations
+            continue
+
+        # No tool calls -> final answer
+        print(ai_message.content)
+        break
