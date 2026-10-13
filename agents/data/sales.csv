@@ -1,0 +1,13 @@
+region,month,sales,customers,ad_spend,returns
+North,Jan,120,20,30,4
+South,Jan,90,15,20,3
+East,Jan,150,25,40,5
+West,Jan,110,18,25,2
+North,Feb,135,22,32,5
+South,Feb,95,16,21,2
+East,Feb,165,27,43,4
+West,Feb,118,19,27,3
+North,Mar,142,23,35,4
+South,Mar,105,18,24,3
+East,Mar,172,29,46,5
+West,Mar,121,20,29,2
