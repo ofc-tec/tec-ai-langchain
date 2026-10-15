@@ -12,7 +12,10 @@ from langchain_tavily import TavilySearch
 tools = [TavilySearch()]
 
 
-llm = ChatOpenAI(model="gpt-4")
+# llm = ChatOpenAI(
+#     model="gpt-4o-mini",
+#     temperature=0
+# )
 
 #llm = ChatOllama(temperature=0, model="llama3.1:latest")
 
@@ -37,10 +40,13 @@ agent = create_react_agent(
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 
 
-chain = agent_executor
-
-
-
+chain = AgentExecutor(
+    agent=agent,
+    tools=tools,
+    verbose=True,
+    handle_parsing_errors=True,
+    max_iterations=5
+)
 
 
 def main():
