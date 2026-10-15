@@ -12,9 +12,9 @@ from langchain_tavily import TavilySearch
 tools = [TavilySearch()]
 
 
-#llm = ChatOpenAI(model="gpt-4")
+llm = ChatOpenAI(model="gpt-4")
 
-llm = ChatOllama(temperature=0, model="llama3.1:latest")
+#llm = ChatOllama(temperature=0, model="llama3.1:latest")
 
 react_prompt = hub.pull("hwchase17/react")
 
