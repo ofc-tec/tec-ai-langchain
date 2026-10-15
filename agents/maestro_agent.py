@@ -1,6 +1,10 @@
 from langchain.agents import create_agent
 from langchain_core.tools import tool
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langgraph.checkpoint.memory import InMemorySaver
+
+
+
 
 from data_agent import data_agent
 from plot_agent import plot_agent
@@ -63,15 +67,16 @@ llm = ChatGoogleGenerativeAI(
     model="gemini-3.8-flash",
     temperature=0,
 )
+memory = InMemorySaver()
 
 
 maestro_agent = create_agent(
     model=llm,
-
     tools=[
         ask_data_agent,
         ask_plot_agent,
     ],
+    checkpointer=memory,    
 
     system_prompt="""
 You are the Maestro Agent for a small data analysis team.
@@ -114,11 +119,19 @@ For sales analysis:
 
 if __name__ == "__main__":
 
-    result = maestro_agent.invoke({
-        "messages": [
-            {
-                "role": "user",
-                "content": """
+    config = {
+        "configurable": {
+            "thread_id": "maestro-demo"
+        }
+    }
+
+    # TURN 1
+    result = maestro_agent.invoke(
+        {
+            "messages": [
+                {
+                    "role": "user",
+                    "content": """
 Analyze the sales dataset.
 
 Give me descriptive statistics.
@@ -127,9 +140,29 @@ Then create:
 1. a bar plot comparing sales by region
 2. a scatter plot showing advertising spend versus sales
 """
-            }
-        ]
-    })
+                }
+            ]
+        },
+        config=config
+    )
 
-    print("\nMAESTRO AGENT\n")
+    print("\nTURN 1\n")
+    print(extract_text(result))
+
+    # TURN 2 — memory test
+    result = maestro_agent.invoke(
+        {
+            "messages": [
+                {
+                    "role": "user",
+                    "content": """
+Without calling the Data Agent again, which region had the highest total sales?
+"""
+                }
+            ]
+        },
+        config=config
+    )
+
+    print("\nTURN 2 - MEMORY TEST\n")
     print(extract_text(result))
