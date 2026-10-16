@@ -8,7 +8,6 @@ documents -> embeddings -> vector store -> retrieval
 -> context -> prompt -> LLM answer
 """
 
-from langchain import hub
 from langchain_core.documents import Document
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.vectorstores import InMemoryVectorStore
@@ -56,26 +55,21 @@ vector_store.add_documents(documents=documents)
 retriever = vector_store.as_retriever(search_kwargs={"k": 3})
 
 # 4A. Generic RAG prompt from LangChain Hub
-prompt = hub.pull("rlm/rag-prompt")
+#prompt = hub.pull("rlm/rag-prompt")
 
 # 4B. Data Steward-specific prompt
-# Uncomment this version and comment out hub.pull(...) to compare them.
 #
-# prompt = ChatPromptTemplate.from_template("""
-# You are a Data Steward assistant.
-#
-# Use only the following retrieved governance context to answer the question.
-# Do not invent policies, ownership information, definitions, or governance rules.
-# If the retrieved context does not contain enough information, say that the
-# information is not available.
-#
-# Question: {question}
-#
-# Context:
-# {context}
-#
-# Answer:
-# """)
+prompt = ChatPromptTemplate.from_template("""
+You are a Data Steward assistant.
+Use only the following retrieved governance context to answer the question.
+Do not invent policies, ownership information, definitions, or governance rules.
+If the retrieved context does not contain enough information, say that the
+information is not available.
+Question: {question}
+Context:
+{context}
+Answer:
+""")
 
 # 5. LLM
 llm = ChatOllama(model="llama3.1:latest", temperature=0)
