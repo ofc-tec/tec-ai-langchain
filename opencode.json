@@ -12,6 +12,17 @@
       ],
       "enabled": true,
       "timeout": 120000
+    },
+    "governance-rag": {
+      "type": "local",
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "mcp/11_mcp_rag_server.py"
+      ],
+      "enabled": true,
+      "timeout": 120000
     }
   }
 }
