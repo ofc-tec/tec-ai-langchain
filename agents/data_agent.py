@@ -1,13 +1,16 @@
 from pathlib import Path
-
 import pandas as pd
-
 from langchain.agents import create_agent
 from langchain_core.tools import tool
-from langchain_google_genai import ChatGoogleGenerativeAI
+
+#from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_ollama import ChatOllama
+
+
 
 
 CSV_PATH = Path(__file__).parent / "data" / "sales.csv"
+
 
 
 @tool
@@ -36,11 +39,14 @@ def summarize_csv() -> str:
     return df.describe().to_string()
 
 
-llm = ChatGoogleGenerativeAI(
-    model="gemini-3.8-flash",
+#llm = ChatGoogleGenerativeAI(
+#    model="gemini-3.8-flash",
+#    temperature=0,
+#)
+llm = ChatOllama(
+    model="llama3.1:latest",
     temperature=0,
 )
-
 
 data_agent = create_agent(
     model=llm,
