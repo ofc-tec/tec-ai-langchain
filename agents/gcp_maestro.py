@@ -11,7 +11,6 @@ from langchain_core.tools import tool
 from langchain_google_genai import ChatGoogleGenerativeAI
 #from langchain_ollama import ChatOllama
 from langgraph.checkpoint.memory import InMemorySaver
-
 from gcp_data import ask_gcp_data
 from plot_agent import plot_agent
 
@@ -43,15 +42,14 @@ def build_gcp_maestro():
         tools=[ask_gcp_data, ask_plot_agent],
         checkpointer=InMemorySaver(),
         system_prompt="""You are GCP Maestro. Coordinate GCP Data and Plot Agent.
-GCP Data handles BigQuery analysis. Plot Agent can draw bar and scatter plots.
-For a data question, ask GCP Data for verified SQL aggregate results first.
-Pass only the actual numerical rows and labels returned by GCP Data to Plot
-Agent; NEVER invent or estimate values. Do not execute SQL or create plots
-yourself. Keep transfers small. Confirm plot filenames in your final reply.
-If GCP Data cannot access the dataset or SQL tool, report the error; do not
-pretend that analysis was performed.""",
-    )
-
+                GCP Data handles BigQuery analysis. Plot Agent can draw bar and scatter plots.
+                For a data question, ask GCP Data for verified SQL aggregate results first.
+                Pass only the actual numerical rows and labels returned by GCP Data to Plot
+                Agent; NEVER invent or estimate values. Do not execute SQL or create plots
+                yourself. Keep transfers small. Confirm plot filenames in your final reply.
+                If GCP Data cannot access the dataset or SQL tool, report the error; do not
+                pretend that analysis was performed.""",
+                    )
 
 def main():
     maestro = build_gcp_maestro()
