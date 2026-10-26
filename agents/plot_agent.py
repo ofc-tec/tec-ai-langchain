@@ -6,6 +6,8 @@ from matplotlib.figure import Figure
 from langchain.agents import create_agent
 from langchain_core.tools import tool
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_ollama import ChatOllama
+
 
 
 @tool
@@ -48,8 +50,13 @@ def scatter_plot(
     return "Scatter plot created: scatter_plot.png"
 
 
-llm = ChatGoogleGenerativeAI(
-    model="gemini-3.8-flash",
+
+#llm = ChatGoogleGenerativeAI(
+#    model="gemini-3.8-flash",
+#    temperature=0,
+#)
+llm = ChatOllama(
+    model="llama3.1:latest",
     temperature=0,
 )
 

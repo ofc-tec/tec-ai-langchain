@@ -29,16 +29,7 @@ from langchain_ollama import ChatOllama
 PROJECT_ID = "ia-2006"
 BIGQUERY_MCP_URL = "https://bigquery.googleapis.com/mcp"
 # These are the ONLY server tools the model can call.
-ALLOWED_TOOLS = {
-    "list_dataset_ids",
-    "get_dataset_info",
-    "list_table_ids",
-    "get_table_info",
-}
-# Enable SQL only after metadata discovery is working.
-ENABLE_READONLY_SQL = False
-if ENABLE_READONLY_SQL:
-    ALLOWED_TOOLS.add("execute_sql_readonly")
+
 
 SYSTEM_PROMPT = f"""You are a careful BigQuery metadata discovery assistant.
 Only explore project {PROJECT_ID}, unless explicitly asked otherwise.
@@ -74,7 +65,7 @@ def as_text(content):
 
 
 async def main():
-    load_dotenv(Path(__file__).resolve().parents[1] / ".env")
+    load_dotenv()
     token = gcloud_access_token()
 
     transport = StreamableHttpTransport(
@@ -86,12 +77,15 @@ async def main():
     )
 
     async with MCPAdapter(transport) as adapter:
-        all_tools = await adapter.list_tools()
-        print("\\n--- AVAILABLE MCP TOOLS ---")
-        print(", ".join(t.name for t in all_tools))
-
-        tools = [tool for tool in all_tools if tool.name in ALLOWED_TOOLS]
+        #all_tools = await adapter.list_tools()
+        #print("\\n--- AVAILABLE MCP TOOLS ---")
+        #print(", ".join(t.name for t in all_tools))
+        #tools = [tool for tool in all_tools if tool.name in ALLOWED_TOOLS]
+        
+        tools= await adapter.list_tools()
         names = {tool.name for tool in tools}
+        
+        
         if "list_dataset_ids" not in names:
             raise RuntimeError("BigQuery MCP did not provide list_dataset_ids")
 

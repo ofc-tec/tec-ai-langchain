@@ -38,9 +38,7 @@ def content_as_text(content):
 
 
 async def main():
-    load_dotenv(HERE.parent / ".env")
-    load_dotenv(HERE / ".env")
-
+    load_dotenv()
     if not SERVER_FILE.is_file():
         raise FileNotFoundError(f"MCP server not found: {SERVER_FILE}")
 
