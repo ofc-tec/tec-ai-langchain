@@ -43,8 +43,9 @@ async def run_gcp_data(question: str) -> str:
 
         agent = create_agent(
             model=ChatGoogleGenerativeAI(
-                model="gemini-3.8-flash",
-                temperature=0,
+                #model="gemini-3.8-flash",
+                #temperature=0,
+                model="gemini-3.5-flash-lite",
             ),
             # model=ChatOllama(model="llama3.1:latest", temperature=0),
             tools=tools,
@@ -65,8 +66,9 @@ async def run_gcp_data(question: str) -> str:
         tools = await adapter.list_tools()
         agent = create_agent(
             model=ChatGoogleGenerativeAI(
-                model="gemini-3.8-flash",
-                temperature=0,
+                #model="gemini-3.8-flash",
+                #temperature=0,
+                model="gemini-3.5-flash-lite",
             ),
             # model=ChatOllama(model="llama3.1:latest", temperature=0),
             tools=tools,

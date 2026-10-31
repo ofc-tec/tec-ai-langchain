@@ -37,7 +37,8 @@ def build_gcp_maestro():
     """Build the shared orchestrator for CLI and MCP consumers."""
     return create_agent(
         # Keep exactly one model active; switch imports above with the model.
-        model=ChatGoogleGenerativeAI(model="gemini-3.8-flash", temperature=0),
+        #model=ChatGoogleGenerativeAI(model="gemini-3.8-flash", temperature=0),
+        model=ChatGoogleGenerativeAI(model="gemini-3.5-flash-lite"),
         #model=ChatOllama(model="llama3.1:latest",temperature=0),
         tools=[ask_gcp_data, ask_plot_agent],
         checkpointer=InMemorySaver(),

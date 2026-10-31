@@ -23,6 +23,17 @@
       ],
       "enabled": true,
       "timeout": 120000
+    },
+    "google-drive": {
+      "type": "local",
+      "command": [
+        "uv",
+        "run",
+        "python",
+        "mcp/15_a_mcp_srvr_drive.py"
+      ],
+      "enabled": true,
+      "timeout": 120000
     }
   }
 }

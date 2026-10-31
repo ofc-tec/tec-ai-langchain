@@ -54,8 +54,9 @@ async def main():
             print(f"- {tool.name}")
 
         llm = ChatGoogleGenerativeAI(
-            model=os.getenv("GEMINI_MODEL", "gemini-3.8-flash"),
-            temperature=0,
+            
+            #model="gemini-3.8-flash",
+            model="gemini-3.5-flash-lite",            
         )
         agent = create_agent(model=llm, tools=tools, system_prompt=SYSTEM_PROMPT)
 
