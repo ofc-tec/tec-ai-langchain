@@ -24,6 +24,8 @@
       "enabled": true,
       "timeout": 120000
     },
+    
+    
     "google-drive": {
       "type": "local",
       "command": [
@@ -34,6 +36,23 @@
       ],
       "enabled": true,
       "timeout": 120000
+    },
+    
+    "banking-audit": {
+      "type": "local",
+      "command": [
+        "uv",
+        "run",
+        "--directory",
+        "/home/oscar/tec_agentic_ai",
+        "python",
+        "mcp/18_banking_audit.py"
+      ],
+      "enabled": true
     }
+
   }
 }
+
+
+
