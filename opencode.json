@@ -2,13 +2,13 @@
   "$schema": "https://opencode.ai/config.json",
   "model": "opencode/mimo-v2.6-flash-free",
   "mcp": {
-    "gcp-maestro": {
+    "gcp-data": {
       "type": "local",
       "command": [
         "uv",
         "run",
         "python",
-        "agents/maestro_mcp_server.py"
+        "agents/gcp_data_server.py"
       ],
       "enabled": true,
       "timeout": 120000
@@ -24,8 +24,6 @@
       "enabled": true,
       "timeout": 120000
     },
-    
-    
     "google-drive": {
       "type": "local",
       "command": [
@@ -37,7 +35,6 @@
       "enabled": true,
       "timeout": 120000
     },
-    
     "banking-audit": {
       "type": "local",
       "command": [
@@ -50,9 +47,6 @@
       ],
       "enabled": true
     }
-
-  }
+  },
+  
 }
-
-
-

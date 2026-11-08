@@ -34,15 +34,56 @@ def bar_plot(
 def scatter_plot(
     x: list[float],
     y: list[float],
-    title: str = "Scatter plot"
+    groups: list[str] | None = None,
+    title: str = "Scatter plot",
+    xlabel: str = "X",
+    ylabel: str = "Y",
 ) -> str:
-    """Create a scatter plot for two numeric variables."""
+    """Create a scatter plot for two numeric variables.
+
+    x and y must contain the same number of observations.
+    Optionally provide one group label per observation to
+    distinguish categories using different colors and markers.
+    """
+
+    if len(x) != len(y):
+        return f"Error: x has {len(x)} values but y has {len(y)}."
+
+    if groups is not None and len(groups) != len(x):
+        return (
+            f"Error: groups has {len(groups)} labels "
+            f"but x has {len(x)} values."
+        )
 
     fig = Figure(figsize=(8, 5))
     ax = fig.subplots()
 
-    ax.scatter(x, y)
+    if groups is None:
+        ax.scatter(x, y)
+
+    else:
+        markers = ["o", "s", "^", "D", "v", "P", "X"]
+        categories = list(dict.fromkeys(groups))
+
+        for i, category in enumerate(categories):
+            indices = [
+                j for j, group in enumerate(groups)
+                if group == category
+            ]
+
+            ax.scatter(
+                [x[j] for j in indices],
+                [y[j] for j in indices],
+                label=category,
+                marker=markers[i % len(markers)],
+                alpha=0.7,
+            )
+
+        ax.legend()
+
     ax.set_title(title)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
 
     fig.tight_layout()
     fig.savefig("scatter_plot.png")

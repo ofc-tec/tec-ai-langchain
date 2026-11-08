@@ -39,36 +39,52 @@ async def run_gcp_data(question: str) -> str:
     #LAngchain MCPAdapter handles the connection and session management for you
 
     async with MCPAdapter(transport) as adapter:
+        
         tools = await adapter.list_tools()
+        
+        
 
         agent = create_agent(
             model=ChatGoogleGenerativeAI(
-                #model="gemini-3.8-flash",
-                #temperature=0,
-                model="gemini-3.5-flash-lite",
+                model="gemini-3.8-flash",
+                temperature=0,
+                
             ),
             # model=ChatOllama(model="llama3.1:latest", temperature=0),
             tools=tools,
             system_prompt=f"""
             You are a BigQuery Data Analyst for project {PROJECT_ID}.
             Use MCP tools to inspect datasets, schemas, and analyze data.
+            NEVER delete datasets or tables.
             Never invent datasets, columns, or results.
             Include executed SQL when relevant.
             """,
                             )
 
-        result = await agent.ainvoke({
-            "messages": [{"role": "user", "content": question}]
-        })
+        result = await agent.ainvoke(
+        {"messages": [{"role": "user", "content": question}]},
+        
+        )   
 
-        return result["messages"][-1].content
+        content = result["messages"][-1].content
+        if isinstance(content, str):
+            return content
+        if isinstance(content, list):
+            return "\n".join(
+                block.get("text", "")
+                for block in content
+                if isinstance(block, dict)
+                and block.get("type") == "text"
+            )
+
+        return str(content)
     async with MCPAdapter(transport) as adapter:
         tools = await adapter.list_tools()
         agent = create_agent(
             model=ChatGoogleGenerativeAI(
-                #model="gemini-3.8-flash",
-                #temperature=0,
-                model="gemini-3.5-flash-lite",
+                model="gemini-3.8-flash",
+                temperature=0,
+                #model="gemini-3.5-flash-lite",
             ),
             # model=ChatOllama(model="llama3.1:latest", temperature=0),
             tools=tools,

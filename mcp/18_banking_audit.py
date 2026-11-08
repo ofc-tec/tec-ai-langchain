@@ -21,10 +21,11 @@ mcp = FastMCP("Banking Audit")
 @mcp.tool()
 def audit_bigquery(days: int = 1, limit: int = 10) -> str:
     """Retrieve recent BigQuery audit events.
-
+    if none is provided  assume 1 day and 10 records.
+    avoid multiple calls, answer the question in as few calls as possible, if the user asks for more than 7 days, limit to 7 days. (tell him that you limited to 7 days).could
     Args:
         days: Number of days to inspect (1-7).
-        limit: Maximum number of events (1-50).
+        
 
     Returns:
         Recent BigQuery audit records.

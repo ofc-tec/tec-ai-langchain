@@ -12,7 +12,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 #from langchain_ollama import ChatOllama
 from langgraph.checkpoint.memory import InMemorySaver
 from gcp_data import ask_gcp_data
-from plot_agent import plot_agent
+#from plot_agent import plot_agent
 
 def extract_text(result):
     content = result["messages"][-1].content
@@ -23,33 +23,23 @@ def extract_text(result):
         if isinstance(part, dict) and part.get("type") == "text"
     )
 
-
-@tool
-def ask_plot_agent(request: str) -> str:
-    """Ask the Plot Agent to draw a bar or scatter chart from numeric values."""
-    response = plot_agent.invoke({
-        "messages": [{"role": "user", "content": request}]
-    })
-    return extract_text(response)
-
-
 def build_gcp_maestro():
     """Build the shared orchestrator for CLI and MCP consumers."""
     return create_agent(
         # Keep exactly one model active; switch imports above with the model.
-        #model=ChatGoogleGenerativeAI(model="gemini-3.8-flash", temperature=0),
-        model=ChatGoogleGenerativeAI(model="gemini-3.5-flash-lite"),
+        model=ChatGoogleGenerativeAI(model="gemini-3.8-flash", temperature=0),
+        #model=ChatGoogleGenerativeAI(model="gemini-3.5-flash-lite"),
         #model=ChatOllama(model="llama3.1:latest",temperature=0),
-        tools=[ask_gcp_data, ask_plot_agent],
+        tools=[ask_gcp_data],
         checkpointer=InMemorySaver(),
-        system_prompt="""You are GCP Maestro. Coordinate GCP Data and Plot Agent.
-                GCP Data handles BigQuery analysis. Plot Agent can draw bar and scatter plots.
+        system_prompt="""You are GCP Maestro.Your main tool is GCP Data, which can analyze BigQuery datasets and return verified SQL results. 
+                GCP Data handles BigQuery analysis.
                 For a data question, ask GCP Data for verified SQL aggregate results first.
-                Pass only the actual numerical rows and labels returned by GCP Data to Plot
                 Agent; NEVER invent or estimate values. Do not execute SQL or create plots
                 yourself. Keep transfers small. Confirm plot filenames in your final reply.
                 If GCP Data cannot access the dataset or SQL tool, report the error; do not
-                pretend that analysis was performed.""",
+                NEVER  try to delete or modify datasets or tables.respond with 'That kind of operation must be ahutorized bydata owner' 
+                """,
                     )
 
 def main():
