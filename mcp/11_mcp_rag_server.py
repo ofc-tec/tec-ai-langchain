@@ -28,13 +28,20 @@ retriever = vector_store.as_retriever(
 )
 
 
-@mcp.tool()  #<-- This decorator registers the function as a tool in the MCP server (not the agent)
+@mcp.tool()
 def search_governance_knowledge(query: str) -> str:
     """
-    Search student-data governance documents for relevant evidence.
+    Search the Pinecone RAG knowledge base for relevant documents.
 
-    Use this tool for questions about privacy, data ownership, retention,
-    approved use, AI use, or other governance rules.
+    Available knowledge includes:
+    - BBVA banking policies and account-opening requirements.
+    - Required identification and proof-of-address documents.
+    - Data governance, privacy, retention, and metadata policies.
+
+    Use this tool FIRST for questions about banking requirements,
+    document validation, account opening, or data governance.
+
+    Returns retrieved evidence with source filenames and page numbers.
     """
     docs = retriever.invoke(query)
 
