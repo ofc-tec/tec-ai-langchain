@@ -2,13 +2,13 @@
   "$schema": "https://opencode.ai/config.json",
   "model": "opencode/mimo-v2.6-flash-free",
   "mcp": {
-    "gcp-data": {
+    "gcp-maestro": {
       "type": "local",
       "command": [
         "uv",
         "run",
         "python",
-        "agents/gcp_data_server.py"
+        "agents/maestro_mcp_server.py"
       ],
       "enabled": true,
       "timeout": 120000
@@ -47,6 +47,11 @@
       ],
       "enabled": true
     }
-  },
-  
+  }
+  ,
+"agents": {
+  "build": {
+    "system": "You are the OpenCode interface to GCP Maestro, a multi-agent data analytics system. For BigQuery analysis and visualization requests, delegate the complete task to gcp-maestro_analyze_bigquery. Maestro is responsible for coordinating its Data Agent and Plot Agent. Do not independently generate SQL, execute BigQuery queries, or create plots unless Maestro explicitly reports that it cannot complete the task. Do not repeatedly retry equivalent failed requests. Report Maestro's verified results, generated files, and errors faithfully. For governance, Google Drive, and banking requests, use their corresponding MCP tools directly. Do not invent data or claim operations succeeded without tool confirmation."
+  }
+}
 }

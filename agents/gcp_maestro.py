@@ -12,7 +12,26 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 #from langchain_ollama import ChatOllama
 from langgraph.checkpoint.memory import InMemorySaver
 from gcp_data import ask_gcp_data
-#from plot_agent import plot_agent
+from plot_agent import plot_agent
+
+
+@tool
+def ask_plot_agent(request: str) -> str:
+    """
+    Delegate chart creation to the Plot Agent.
+
+    Provide verified numerical values and descriptive labels.
+    The Plot Agent creates bar or scatter plots using Matplotlib.
+    """
+    result = plot_agent.invoke({
+        "messages": [
+            {"role": "user", "content": request}
+        ]
+    })
+    return extract_text(result)
+
+
+
 
 def extract_text(result):
     content = result["messages"][-1].content
@@ -30,7 +49,7 @@ def build_gcp_maestro():
         model=ChatGoogleGenerativeAI(model="gemini-3.8-flash", temperature=0),
         #model=ChatGoogleGenerativeAI(model="gemini-3.5-flash-lite"),
         #model=ChatOllama(model="llama3.1:latest",temperature=0),
-        tools=[ask_gcp_data],
+        tools=[ask_gcp_data, ask_plot_agent],
         checkpointer=InMemorySaver(),
         system_prompt="""You are GCP Maestro.Your main tool is GCP Data, which can analyze BigQuery datasets and return verified SQL results. 
                 GCP Data handles BigQuery analysis.
